@@ -34,6 +34,7 @@ nav:
   - Home: index.md
   - Why STUF: why/index.md
   - How to use STUF: getting-started/index.md
+  - Contribute: contribute/index.md
 
 markdown_extensions:
   - admonition
