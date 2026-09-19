@@ -10,7 +10,7 @@ STUF is a Rust project.
 
 ## Clone
 
-    git clone https://github.com/jeremydosborn/stuf.git
+    git clone https://github.com/juneswift/stuf.git
     cd stuf
 
 ## Check the toolchain

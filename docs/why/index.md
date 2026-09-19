@@ -1,5 +1,5 @@
 !!! warning "Early-stage software"
-    STUF is not production-ready. It has not undergone independent security review and should not be used in production update paths without one. See the [GitHub repo](https://github.com/jeremydosborn/stuf) for current status.
+    STUF is not production-ready. It has not undergone independent security review and should not be used in production update paths without one. See the [GitHub repo](https://github.com/juneswift/stuf) for current status.
 
 # Why STUF?
 

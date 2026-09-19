@@ -1,5 +1,5 @@
 !!! warning "Early-stage software"
-    STUF is not production-ready. It has not undergone independent security review and should not be used in production update paths without one. See the [GitHub repo](https://github.com/jeremydosborn/stuf) for current status.
+    STUF is not production-ready. It has not undergone independent security review and should not be used in production update paths without one. See the [GitHub repo](https://github.com/juneswift/stuf) for current status.
 
 # How to use STUF
 
@@ -12,7 +12,7 @@ This section covers getting the code running locally, understanding the workspac
 You need a Rust toolchain. If you don't have one, install it from [rustup.rs](https://rustup.rs).
 
 ```bash
-git clone https://github.com/jeremydosborn/stuf.git
+git clone https://github.com/juneswift/stuf.git
 cd stuf
 cargo test
 ```

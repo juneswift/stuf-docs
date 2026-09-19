@@ -1,8 +1,8 @@
 site_name: STUF
 site_description: Secure Trust Update Framework documentation
-site_url: https://jeremydosborn.github.io/stuf/
-repo_url: https://github.com/jeremydosborn/stuf
-repo_name: jeremydosborn/stuf
+site_url: https://juneswift.github.io/stuf-docs/
+repo_url: https://github.com/juneswift/stuf
+repo_name: juneswift/stuf
 
 theme:
   name: material
@@ -34,7 +34,6 @@ nav:
   - Home: index.md
   - Why STUF: why/index.md
   - How to use STUF: getting-started/index.md
-  - Support STUF: support/index.md
 
 markdown_extensions:
   - admonition

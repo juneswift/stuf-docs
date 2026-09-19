@@ -255,7 +255,6 @@ hide:
       working embedded examples, and no-heap and small-heap profiles. Not production-ready without
       independent security review.
     </p>
-    <p><a href="support/">Support STUF →</a></p>
   </div>
 
   <div class="stuf-panel-visual" aria-hidden="true">
