@@ -1,3 +1,6 @@
+!!! warning "Early-stage software"
+    STUF is not production-ready. It has not undergone independent security review and should not be used in production update paths without one. See the [GitHub repo](https://github.com/juneswift/stuf) for current status.
+
 # Contribute
 
 STUF is an early-stage open-source project. Contributions, technical review, and implementation feedback are welcome.
