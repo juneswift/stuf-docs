@@ -55,21 +55,9 @@ Canonical encoding ensures that signature inputs are deterministic: the same met
 
 ### stuf-env
 
-Environment bindings are composable. `stuf-env` implements the traits defined in `stuf-core` behind Cargo feature flags:
+`stuf-env` provides the environment-facing capabilities used by STUF verification code, including cryptographic verification, hashing, clocks, and transport abstractions. These capabilities are selected through Cargo features so constrained targets can opt into only what they need.
 
-```toml
-[dependencies.stuf-env]
-version = "0.1"
-default-features = false
-features = [
-  "crypto-ed25519",    # Ed25519 signature verification
-  "transport-uart",    # UART transport for embedded
-  "clock-rtos",        # RTOS clock binding
-  "encoding-cbor",     # CBOR encoding for constrained devices
-]
-```
-
-On a cloud target you might use `crypto-ring`, `transport-http`, and `clock-std`. On a bare-metal microcontroller you might use `crypto-tinycrypt`, `transport-uart`, and `clock-fixed`. The trust kernel and verification logic are identical, only the environment bindings change.
+The embedded toaster examples use feature combinations including `crypto-ed25519`, `hash-sha256`, and `clock-fixed`. The standard toaster also enables allocation support, while the no-heap toaster uses the no-heap TUF verification path without a global allocator.
 
 ### stuf-protocols
 
@@ -91,13 +79,16 @@ cargo test
 cargo test -p stuf-core
 cargo test -p stuf-encoding
 cargo test -p stuf-env
-cargo test -p stuf-tuf
+cargo test -p stuf-tuf --features "crypto-ed25519,hash-sha256"
 
-# Check the no-default-features build, important for embedded targets
-cargo test --no-default-features
+# Check that the workspace builds with package default features disabled
+cargo check --workspace --no-default-features
 
-# Full development check
-cargo fmt && cargo clippy --all-targets --all-features && cargo test
+# Test the TUF no-heap profile without default features or alloc
+cargo test -p stuf-tuf \
+  --no-default-features \
+  --features "no-heap,crypto-ed25519,hash-sha256" \
+  --test no_heap
 ```
 
 ## Running the examples
