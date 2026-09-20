@@ -21,7 +21,7 @@ All tests should pass. If anything fails, open an issue.
 
 ## Workspace layout
 
-STUF is a Cargo workspace with five crates, each with a distinct responsibility.
+STUF is a Cargo workspace organized around five main components, each with a distinct responsibility.
 
 ```text
 stuf-core       # trust kernel — verified types, verifier traits, error model
@@ -91,7 +91,7 @@ cargo test
 cargo test -p stuf-core
 cargo test -p stuf-encoding
 cargo test -p stuf-env
-cargo test -p stuf-protocols
+cargo test -p stuf-tuf
 
 # Check the no-default-features build, important for embedded targets
 cargo test --no-default-features
