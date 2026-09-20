@@ -23,12 +23,12 @@ All tests should pass. If anything fails, open an issue.
 
 STUF is a Cargo workspace with five crates, each with a distinct responsibility.
 
-```
+```text
 stuf-core       # trust kernel — verified types, verifier traits, error model
 stuf-encoding   # canonical encoding — deterministic serialization, hash inputs
 stuf-env        # environment bindings — crypto, transport, clock, storage
 stuf-protocols  # protocol profiles — TUF role chain, metadata verification
-stuf-examples   # working examples — publisher fixture, embedded toaster demo
+stuf-examples   # working examples — publisher fixture, embedded toaster demos
 ```
 
 The dependency direction flows one way: `stuf-protocols` depends on `stuf-core` and `stuf-env`, not the other way around. The kernel has no knowledge of protocols.
@@ -73,13 +73,13 @@ On a cloud target you might use `crypto-ring`, `transport-http`, and `clock-std`
 
 ### stuf-protocols
 
-Protocol profiles implement the full verification chain for a specific security protocol. The TUF profile verifies the Root → Targets → Snapshot → Timestamp chain, checks role thresholds, validates expiry, and authorizes the target artifact.
+Protocol profiles implement the full verification chain for a specific security protocol. The TUF profile verifies the Root → Timestamp → Snapshot → Targets chain, checks role thresholds, validates expiry, and authorizes the target artifact.
 
 Protocol profiles are deliberately separate from the kernel.
 
 ### stuf-examples
 
-The examples are the fastest way to see how everything fits together. The publisher example generates a signed metadata tree. The embedded toaster demo runs the full verification flow on an ARM Cortex-M3 target in QEMU — no heap, no allocator, root of trust baked in at compile time.
+The examples are the fastest way to see how everything fits together. The publisher example generates a signed metadata tree and sample firmware artifact. The standard toaster demo runs the full verification flow on an ARM Cortex-M3 target in QEMU using a small allocator. A separate `toaster-no-heap` example runs the same verification flow with fixed buffers and no global allocator. In both cases, the root of trust is baked in at compile time to model manufacture-time provisioning.
 
 ## Running the tests
 
@@ -102,23 +102,80 @@ cargo fmt && cargo clippy --all-targets --all-features && cargo test
 
 ## Running the examples
 
-The publisher example generates a signed metadata tree you can use to test verification:
+First generate the signed TUF repository and sample firmware artifact:
 
 ```bash
-cargo run -p stuf-examples --bin publisher
+cargo run -p publisher
 ```
 
-The embedded example targets ARM Cortex-M3. Install the cross-compilation target first:
+The publisher writes the repository to:
+
+```text
+stuf-examples/.generated/publisher-repo/
+```
+
+and copies the trusted root metadata into the toaster factory directory to model provisioning at manufacture time.
+
+The embedded examples target ARM Cortex-M3. Install the cross-compilation target:
 
 ```bash
 rustup target add thumbv7m-none-eabi
-cargo build -p stuf-examples --target thumbv7m-none-eabi
 ```
 
-To run it under QEMU:
+The demos run under QEMU using the `lm3s6965evb` Cortex-M3 machine. On macOS:
 
 ```bash
-cargo run -p stuf-examples --target thumbv7m-none-eabi
+brew install qemu
 ```
 
-This runs the full verification flow — fetching metadata over semihosting, verifying the trust chain, and checking the target artifact — on a simulated embedded device with no heap allocation.
+You can verify QEMU is available with:
+
+```bash
+qemu-system-arm --version
+```
+
+### Standard toaster
+
+Build the optimized embedded binary:
+
+```bash
+cargo build -p toaster --target thumbv7m-none-eabi --release
+```
+
+The release build is required because the unoptimized debug build exceeds the 256 KB flash budget of the emulated target.
+
+Run the toaster under QEMU:
+
+```bash
+qemu-system-arm \
+  -M lm3s6965evb \
+  -cpu cortex-m3 \
+  -nographic \
+  -semihosting-config enable=on,target=native \
+  -kernel target/thumbv7m-none-eabi/release/toaster
+```
+
+The demo starts at firmware `v1.0.0`, verifies the TUF metadata chain and the `v1.1.0` firmware artifact, and then performs a simulated flash installation.
+
+### No-heap toaster
+
+Build the no-heap variant:
+
+```bash
+cargo build -p toaster-no-heap --target thumbv7m-none-eabi --release
+```
+
+Run it under QEMU:
+
+```bash
+qemu-system-arm \
+  -M lm3s6965evb \
+  -cpu cortex-m3 \
+  -nographic \
+  -semihosting-config enable=on,target=native \
+  -kernel target/thumbv7m-none-eabi/release/toaster-no-heap
+```
+
+The `toaster-no-heap` profile performs the same verification flow using fixed buffers and no global allocator.
+
+Both demos execute STUF verification logic as ARM Cortex-M3 binaries under QEMU. They fetch metadata through semihosting, verify the TUF trust chain, verify the target firmware artifact, and perform a simulated flash write. The demo does not yet reboot into a second firmware image.
